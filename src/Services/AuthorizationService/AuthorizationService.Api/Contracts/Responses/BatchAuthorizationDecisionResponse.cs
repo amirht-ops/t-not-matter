@@ -1,0 +1,3 @@
+namespace AuthorizationService.Api.Contracts.Responses;
+
+public sealed record BatchAuthorizationDecisionResponse(IReadOnlyCollection<AuthorizationDecisionResponse> Decisions);

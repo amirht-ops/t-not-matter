@@ -1,0 +1,5 @@
+using AuthorizationService.Application.Features.EvaluateAuthorizationDecision;
+
+namespace AuthorizationService.Application.Features.EvaluateBatchAuthorizationDecisions;
+
+public sealed record EvaluateBatchAuthorizationDecisionsResponse(IReadOnlyCollection<EvaluateAuthorizationDecisionResponse> Decisions);

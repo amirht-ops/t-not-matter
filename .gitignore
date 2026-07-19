@@ -1,0 +1,14 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+/.vs/Enterprise-Security-Platform
+/src/Services/TenantService/TenantService.Api/logs
+/src/Services/IdentityService/IdentityService.Api/logs
+/.vs
+/src/Services/AuthorizationService/AuthorizationService.Api/logs
+openapi.json
+nul
+AGENTS.md
+AGENTS.md

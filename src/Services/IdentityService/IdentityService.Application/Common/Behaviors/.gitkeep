@@ -1,0 +1,3 @@
+Behaviors are now provided centrally via Platform.Behaviors (see AddPlatformBehaviors in ServiceCollectionExtensions).
+This directory exists only to maintain the Application/Common structure conventions.
+If a service-specific MediatR behavior is ever needed, place it here.

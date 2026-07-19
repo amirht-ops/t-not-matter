@@ -1,0 +1,221 @@
+The `GetTenantBySlug` flow is still failing with HTTP 404 even though the tenant (`admini`) exists in PostgreSQL.
+
+I do NOT want another static code review.
+
+I want a LIVE runtime investigation until the root cause is identified and fixed.
+
+## Goal
+
+Run both services locally and debug the complete login flow end-to-end until the following request succeeds (or until the real root cause is found and fixed):
+
+POST http://localhost:5244/api/v1/identity/auth/login
+
+Body:
+
+{
+  "identifier": "admini.super",
+  "password": "P@ssword123!",
+  "mfaCode": null
+}
+
+Do not stop after adding logs.
+Do not stop after identifying a possible cause.
+Continue testing after every fix until the actual behavior is correct.
+
+---
+
+## Services to run
+
+Run both services simultaneously:
+
+- IdentityService
+- TenantService
+
+Use the existing local PostgreSQL, Redis and RabbitMQ.
+
+---
+
+## Runtime debugging requirements
+
+Trace the entire execution path:
+
+Login endpoint
+→ LoginCommandHandler
+→ CachedTenantServiceClient
+→ TenantServiceClient
+→ GET /api/v1/tenants/slug/admini
+→ Tenant endpoint
+→ MediatR pipeline
+→ GetTenantBySlugQueryHandler
+→ Repository
+→ EF Core
+→ PostgreSQL
+
+Verify every step with the actual runtime values.
+
+---
+
+## Database verification
+
+Do NOT assume the seed data exists.
+
+Connect to PostgreSQL and verify everything directly.
+
+Check:
+
+- Tenant row exists
+- Tenant.Id
+- Tenant.Name
+- Tenant.Slug
+- Tenant.Status
+- Soft delete flag
+- Global filters
+- Any tenant-related tables
+- Department if needed
+- User if needed
+
+Show the exact SQL queries you executed.
+
+---
+
+## Repository verification
+
+Debug:
+
+tenantRepository.GetBySlugAsync()
+
+Verify:
+
+- Generated SQL
+- Parameters
+- Query filters
+- IgnoreQueryFilters usage
+- Returned entity
+
+If PostgreSQL contains the row but EF returns null,
+identify exactly why.
+
+---
+
+## RLS / Global Filter investigation
+
+Carefully inspect whether one of these blocks the query:
+
+- TenantRlsInterceptor
+- Query Filters
+- RequestContext
+- CurrentPrincipal
+- TenantMiddleware
+- PrincipalResolutionMiddleware
+- ICurrentPrincipal
+- IRequestContext
+
+Determine whether the Service Principal is still being subjected to tenant isolation.
+
+If any filter incorrectly applies to Service Principals, fix it.
+
+---
+
+## MediatR pipeline investigation
+
+Inspect every pipeline behavior:
+
+- ValidationBehavior
+- CachingBehavior
+- TenantBehavior
+- AuthorizationBehavior
+- LoggingBehavior
+
+Verify that no behavior modifies or short-circuits the request unexpectedly.
+
+---
+
+## Cache verification
+
+Investigate Redis.
+
+Determine:
+
+- Is GetTenantBySlug cached?
+- Which cache key is used?
+- Is an old 404 cached?
+- Is CachedTenantServiceClient returning stale data?
+- Is DistributedCache returning an outdated Result?
+
+Flush only the relevant cache if necessary.
+
+Do not clear unrelated keys.
+
+---
+
+## Runtime values
+
+Capture the actual runtime values for:
+
+Slug
+
+RequestContext
+
+CurrentPrincipal
+
+PrincipalType
+
+TenantId
+
+ServiceName
+
+Generated cache key
+
+Generated SQL
+
+Returned entity
+
+Returned Result<T>
+
+HTTP response
+
+---
+
+## Fixes
+
+If you identify a bug:
+
+- Fix it
+- Rebuild
+- Restart the affected service
+- Repeat the login request
+
+Continue until the login flow behaves correctly.
+
+Do NOT stop after the first fix.
+
+---
+
+## Constraints
+
+- Do not add temporary diagnostics that remain in the code.
+- Do not add TODO comments.
+- Do not add tests.
+- Do not change business rules.
+- Do not disable security.
+- Do not bypass authentication.
+- Do not bypass authorization.
+
+Fix only the real root cause.
+
+---
+
+## Deliverables
+
+Provide a final report including:
+
+1. Root cause
+2. Why the tenant existed but was not returned
+3. Every file modified
+4. Exact code changes
+5. SQL executed
+6. Generated EF SQL
+7. Cache findings
+8. Principal/RequestContext values during execution
+9. Verification that the login request now works correctly
+10. Any architectural issue discovered during the investigation that should be addressed later (without implementing it).

@@ -1,0 +1,2 @@
+Behaviors are provided centrally via Platform.Behaviors (see AddPlatformBehaviors + AddApplication).
+If a service-specific MediatR behavior is needed in the future, place it here.

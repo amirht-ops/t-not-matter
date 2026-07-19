@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MassTransit" Version="8.5.2" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.2" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="10.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.8" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="StackExchange.Redis" Version="2.13.17" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Platform\Platform.Caching\Platform.Caching.csproj" />
+        <ProjectReference Include="..\..\..\Platform\Platform.Authorization\Platform.Authorization.csproj" />
+        <ProjectReference Include="..\..\..\Platform\Platform.Infrastructure\Platform.Infrastructure.csproj" />
+        <ProjectReference Include="..\PolicyService.Application\PolicyService.Application.csproj" />
+        <ProjectReference Include="..\PolicyService.Domain\PolicyService.Domain.csproj" />
+        <ProjectReference Include="..\..\..\Shared\SharedKernel\SharedKernel.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Persistence\Configurations\" />
+        <Folder Include="Outbox\" />
+        <Folder Include="Repositories\" />
+    </ItemGroup>
+
+</Project>
